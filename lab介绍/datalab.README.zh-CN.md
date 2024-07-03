@@ -118,6 +118,11 @@ Note on Binary Portability: dlc is distributed in the datalab-handout directory 
 
 Note: Running "make" also automatically generates the solutions to the puzzles, which you can find in ./src/bits.c and ./src/bits.c-solution.
 
+Makefile 会生成 btest 源文件，构建 dlc 二进制文件（如果需要），格式化实验报告，然后将 btest、dlc 二进制文件和驱动程序复制到 handout 目录。之后，它会将 handout 目录打包成 tar 文件（位于 ./datalab-handout.tar），你可以将其发给学生。
+
+关于二进制文件的可移植性：dlc 作为二进制文件分发在 datalab-handout 目录中。由于动态库版本不同，Linux 二进制文件在不同发行版之间并不总是可移植的。你需要确保在与学生使用的机器兼容的机器上编译 dlc。
+
+注意：运行 “make” 也会自动生成拼图的解决方案，你可以在 ./src/bits.c 和 ./src/bits.c-solution 中找到它们。
 
 ******************
 4. Grading the Lab
@@ -157,6 +162,23 @@ the lab to the students, you're still OK:
 
 3) Distribute the new ./src/Driverhdrs.pm file to the students.
 
+为了增加乐趣，我们提供了一个可选的“击败教授”比赛，学生可以与自己和导师竞争。目标是使用最少的运算符解决每个数据实验室拼图。那些在每个拼图中匹配或超过导师运算符数量的学生将成为赢家。有关如何设置比赛的简单说明，请参阅 ./contest/README。
+
+注意：比赛是完全可选的。无论你决定是否提供它，都不会影响你构建和分发实验。
+
+注意：如果你决定提供比赛，那么你应该在构建实验之前配置比赛，以便驱动程序知道要将每个学生的比赛结果发送到哪个服务器和端口（使用 ./src/Driverhdrs.pm 文件中定义的常量，这些常量是从 ./contest/Contest.pm 配置文件自动生成的）。
+
+如果你在构建并发放实验给学生之后决定提供比赛，也没问题：
+
+1) 按照 contest/Makefile 中的描述配置比赛
+
+2) 按通常方式重新构建实验：
+   ```
+   linux> cd datalab
+   linux> make
+   ```
+
+3) 将新的 ./src/Driverhdrs.pm 文件分发给学生。
 
 ***************************
 6. Experimental BDD checker
@@ -197,3 +219,27 @@ if you have any questions about the correctness of a particular
 solution, then this is the authoritative way to decide.
 
 Please send any comments about the BDD checker to randy.bryant@cs.cmu.edu.
+
+为了增加乐趣，我们包含了一个基于二元决策图（BDDs）的实验性正确性检查器（R. E. Bryant，IEEE Transactions on Computers，1986年8月），该检查器使用了科罗拉多大学的 CUDD BDD 包。BDD 检查器对 bits.c 中的测试函数进行详尽的测试，正式验证每个测试函数在 *所有* 可能输入值下的正确性。对于与参考解决方案不同的函数，BDD 检查器会生成一个反例，反例以一组导致测试解决方案与参考解决方案不同的函数参数形式出现。
+
+源代码包含在 ./src/bddcheck 中。编译方法：
+
+```sh
+unix> cd src/bddcheck
+unix> make clean
+unix> make
+```
+
+使用 BDD 检查 bits.c 的正确性：
+
+```sh
+unix> cd src
+unix> ./bddcheck/check.pl     # 带有错误消息和反例
+unix> ./bddcheck/check.pl -g  # 紧凑的表格输出，无错误消息
+```
+
+请注意，check.pl 必须从 ./bddcheck 的父目录运行。
+
+我们在 CMU 使用这个 BDD 检查器来代替 btest 已有数年时间，代码似乎很稳定。主要的弱点在于提取 bits.c 中函数的 Perl 代码。它通常能正常工作，但有些情况——例如调用其他函数或函数不以单个大括号结尾——会使其混乱。因此，我们不愿意将其作为分布式 CS:APP 实验室的默认检查器。然而，如果你对特定解决方案的正确性有任何疑问，这是决定的权威方法。
+
+请将关于 BDD 检查器的任何意见发送至 randy.bryant@cs.cmu.edu。
