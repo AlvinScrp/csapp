@@ -57,58 +57,55 @@ of operators you are allowed to use to implement each function. See the comments
 details on the desired behavior of the functions. You may also refer to the test functions in tests.c. These
 are used as reference functions to express the correct behavior of your functions, although they don’t satisfy
 the coding rules for your functions.
-Name Description Rating Max ops
-bitXor(x,y) x || y using only & and ˜. 1 14
-tmin() Smallest two’s complement integer 1 4
-isTmax(x) True only if x x is largest two’s comp. integer. 1 10
-allOddBits(x) True only if all odd-numbered bits in x set to 1. 2 12
-negate(x) Return -x with using - operator. 2 5
-isAsciDigit(x) True if 0x30 ≤ x ≤. 3 15
-conditional Same as x ? y : z 3 16
-isLessOrEqual(x, y) True if x ≤ y, false otherwise 3 24
-logicalNeg(x)) Compute !x without using ! operator. 4 12
-howManyBits(x) Min. no. of bits to represent x in two’s comp. 4 90
-floatScale2(uf) Return bit-level equiv. of 2*f for f.p. arg. f. 4 30
-floatFloat2Int(uf) Return bit-level equiv. of (int)f for f.p. arg. f. 4 30
-floatPower2(x) Return bit-level equiv. of 2.0ˆx for integer x. 4 30
+本节介绍您将在 bits.c 中解决的谜题。
+表 1 按照难度从最简单到最难的粗略顺序列出了谜题。“评级”字段给出了谜题的难度评级（点数），“最大操作数”字段给出了您可用于实现每个函数的最大运算符数。有关函数所需行为的更多详细信息，请参阅 bits.c 中的注释。您还可以参考 tests.c 中的测试函数。这些函数用作参考函数来表达函数的正确行为，尽管它们不满足函数的编码规则。
 
-Table 1: Datalab puzzles. For the floating point puzzles, value f is the floating-point number having the
-same bit representation as the unsigned integer uf.
-For the floating-point puzzles, you will implement some common single-precision floating-point operations.
-For these puzzles, you are allowed to use standard control structures (conditionals, loops), and you may
-use both int and unsigned data types, including arbitrary unsigned and integer constants. You may
-not use any unions, structs, or arrays. Most significantly, you may not use any floating point data types,
-operations, or constants. Instead, any floating-point operand will be passed to the function as having type
+|        Name         | Description                                        | Rating | Max ops |
+|:-------------------:|----------------------------------------------------|:------:|:-------:|
+|     bitXor(x,y)     | x y using only & and ˜.                            |   1    |   14    |
+|       tmin()        | Smallest two’s complement integer                  |   1    |    4    |
+|      isTmax(x)      | True only if x x is largest two’s comp. integer.   |   1    |   10    |
+|    allOddBits(x)    | True only if all odd-numbered bits in x set to 1.  |   2    |   12    |
+|      negate(x)      | Return -x with using - operator.                   |   2    |    5    |
+|   isAsciDigit(x)    | True if 0x30 ≤ x ≤.                                |   3    |   15    |
+|     conditional     | Same as x ? y : z                                  |   3    |   16    |
+| isLessOrEqual(x, y) | True if x ≤ y, false otherwise                     |   3    |   24    |
+|   logicalNeg(x))    | Compute !x without using ! operator.               |   4    |   12    |
+|   howManyBits(x)    | Min. no. of bits to represent x in two’s comp.     |   4    |   90    |
+|   floatScale2(uf)   | Return bit-level equiv. of 2*f for f.p. arg. f.    |   4    |   30    |
+| floatFloat2Int(uf)  | Return bit-level equiv. of (int)f for f.p. arg. f. |   4    |   30    |
+|   floatPower2(x)    | Return bit-level equiv. of 2.0ˆx for integer x.    |   4    |   30    |
 
-unsigned, and any returned floating-point value will be of type unsigned. Your code should perform
-the bit manipulations that implement the specified floating point operations.
-The included program fshow helps you understand the structure of floating point numbers. To compile
-fshow, switch to the handout directory and type:
+Table 1: Datalab puzzles. For the floating point puzzles, value f is the floating-point number having the same bit representation as the unsigned integer uf.
+For the floating-point puzzles, you will implement some common single-precision floating-point operations. For these puzzles, you are allowed to use standard control structures (conditionals, loops), and you may use both int and unsigned data types, including arbitrary unsigned and integer constants. You may not use any unions, structs, or arrays. Most significantly, you may not use any floating point data types, operations, or constants. Instead, any floating-point operand will be passed to the function as having type unsigned, and any returned floating-point value will be of type unsigned. Your code should perform the bit manipulations that implement the specified floating point operations. The included program fshow helps you understand the structure of floating point numbers.
+To compile fshow, switch to the handout directory and type:
 unix> make
 You can use fshow to see what an arbitrary pattern represents as a floating-point number:
 unix> ./fshow 2080374784
-Floating point value 2.658455992e+36
-Bit Representation 0x7c000000, sign = 0, exponent = f8, fraction = 000000
-Normalized. 1.0000000000 X 2ˆ(121)
+Floating point value 2.658455992e+36 Bit Representation 0x7c000000, sign = 0, exponent = f8, fraction = 000000 Normalized. 1.0000000000 X 2ˆ(121)
 You can also give fshow hexadecimal and floating point values, and it will decipher their bit structure.
-5 Evaluation
+表 1: Datalab 谜题。对于浮点谜题，值 f 是与无符号整数 uf 具有相同位表示的浮点数。
+对于浮点谜题，您将实现一些常见的单精度浮点操作。对于这些谜题，允许使用标准控制结构（条件语句、循环），可以使用 int 和 unsigned 数据类型，包括任意的无符号和整数常量。但不能使用任何联合、结构或数组。最重要的是，不能使用任何浮点数据类型、操作或常量。相反，任何浮点操作数将作为 unsigned 类型传递给函数，任何返回的浮点值也将是 unsigned 类型。您的代码应该执行位操作来实现指定的浮点操作。附带的程序 fshow 可帮助您理解浮点数的结构。
+要编译 fshow，切换到讲义目录并输入：
+```
+unix> make
+```
+您可以使用 fshow 查看任意模式表示的浮点数：
+```
+unix> ./fshow 2080374784
+```
+输出：
+```
+浮点值 2.658455992e+36 位表示 0x7c000000，符号 = 0，指数 = f8，尾数 = 000000 规格化。1.0000000000 X 2^(121)
+```
+您也可以给 fshow 提供十六进制和浮点值，它将解读它们的位结构。
+
+## 5 Evaluation
 Your score will be computed out of a maximum of 67 points based on the following distribution:
 36 Correctness points.
 26 Performance points.
 5 Style points.
-Correctness points. The puzzles you must solve have been given a difficulty rating between 1 and 4, such
-that their weighted sum totals to 36. We will evaluate your functions using the btest program, which is
-described in the next section. You will get full credit for a puzzle if it passes all of the tests performed by
-btest, and no credit otherwise.
-Performance points. Our main concern at this point in the course is that you can get the right answer.
-However, we want to instill in you a sense of keeping things as short and simple as you can. Furthermore,
-some of the puzzles can be solved by brute force, but we want you to be more clever. Thus, for each function
-we’ve established a maximum number of operators that you are allowed to use for each function. This limit
-is very generous and is designed only to catch egregiously inefficient solutions. You will receive two points
-for each correct function that satisfies the operator limit.
-Style points. Finally, we’ve reserved 5 points for a subjective evaluation of the style of your solutions and
-your commenting. Your solutions should be as clean and straightforward as possible. Your comments should
-be informative, but they need not be extensive.
+Correctness points. The puzzles you must solve have been given adifficulty rating between 1 and 4, such that their weighted sum totals to 36. We will evaluate your functions using the btest program, which is described in the next section. You will get full credit for a puzzle if it passes all of the tests performed by btest, and no credit otherwise. Performance points. Our main concern at this point in the course is that you can get the right answer. However, we want to instill in you a sense of keeping things as short and simple as you can. Furthermore, some of the puzzles can be solved by brute force, but we want you to be more clever. Thus, for each function we’ve established a maximum number of operators that you are allowed to use for each function. This limit is very generous and is designed only to catch egregiously inefficient solutions. You will receive two points for each correct function that satisfies the operator limit. Style points. Finally, we’ve reserved 5 points for a subjective evaluation of the style of your solutions and your commenting. Your solutions should be as clean and straightforward as possible. Your comments should be informative, but they need not be extensive.
 
 
 Autograding your work
