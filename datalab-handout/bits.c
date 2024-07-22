@@ -204,10 +204,13 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-    return 2;
+    return !((x + ~0x30 + 1) >> 31) & !((0x39 + ~x + 1) >> 31);
+//    int flag1 = !!((0x2F + ~x + 1) >> 31);
+//    int flag2 = !((0x39 + ~x + 1) >> 31);
+//    return flag1 & flag2;
 }
 
-/*
+/*7
  * conditional - same as x ? y : z 
  *   Example: conditional(2,4,5) = 4
  *   Legal ops: ! ~ & ^ | + << >>
@@ -215,10 +218,11 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-    return 2;
+    int mask = ~(!!x) + 1;
+    return mask & y | ~mask & z;
 }
 
-/*
+/*8
  * isLessOrEqual - if x <= y  then return 1, else return 0 
  *   Example: isLessOrEqual(4,5) = 1.
  *   Legal ops: ! ~ & ^ | + << >>
@@ -226,10 +230,14 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-    return 2;
+    int nX = !!(x >> 31); //x 是否为负数
+    int nY = !!(y >> 31);  //y 是否为负数
+    int xorF = nX ^ nY;
+
+    return (xorF & (nX & !nY)) | (!xorF & !!(x + (~y + 1) - 1 >> 31));
 }
-//4
-/* 
+
+/* 9
  * logicalNeg - implement the ! operator, using all of 
  *              the legal operators except !
  *   Examples: logicalNeg(3) = 0, logicalNeg(0) = 1
@@ -238,10 +246,11 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-    return 2;
+    return ((x | (~x + 1)) >> 31) + 1;
 }
 
-/* howManyBits - return the minimum number of bits required to represent x in
+/* 10
+ * howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
  *  Examples: howManyBits(12) = 5
  *            howManyBits(298) = 10
@@ -254,10 +263,24 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-    return 0;
+    int b16, b8, b4, b2, b1, b0, sign = x >> 31;
+    x = (sign & ~x) | (~sign & x); //得到一个正数，x为正数时，返回x。 x为负数时，返回相反数(最低位0，转换承最低位1)
+    b16 = !!(x >> 16) << 4;// b16 = if(高16存在) 16 else 0
+    x = x >> b16;  //if(高16存在) 则继续在高16位找，同时位数+16， else 在低16位找
+    b8 = !!(x >> 8) << 3; // 8
+    x = x >> b8;
+    b4 = !!(x >> 4) << 2; // 4
+    x = x >> b4;
+    b2 = !!(x >> 2) << 1; // 2
+    x = x >> b2;
+    b1 = !!(x >> 1); //1
+    x = x >> b1;
+    b0 = x;
+
+    return b16 + b8 + b4 + b2 + b1 + b0 + 1;
 }
-//float
-/* 
+
+/* 11
  * floatScale2 - Return bit-level equivalent of expression 2*f for
  *   floating point argument f.
  *   Both the argument and result are passed as unsigned int's, but
@@ -272,7 +295,7 @@ unsigned floatScale2(unsigned uf) {
     return 2;
 }
 
-/*
+/*12
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
  *   for floating point argument f.
  *   Argument is passed as unsigned int, but
@@ -288,7 +311,7 @@ int floatFloat2Int(unsigned uf) {
     return 2;
 }
 
-/*
+/*13
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
  *   (2.0 raised to the power x) for any 32-bit integer x.
  *
