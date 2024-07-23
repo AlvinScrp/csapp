@@ -281,21 +281,33 @@ int howManyBits(int x) {
 }
 
 /* 11
- * floatScale2 - Return bit-level equivalent of expression 2*f for
- *   floating point argument f.
- *   Both the argument and result are passed as unsigned int's, but
- *   they are to be interpreted as the bit-level representation of
- *   single-precision floating point values.
- *   When argument is NaN, return argument
- *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
- *   Max ops: 30
- *   Rating: 4
- */
+* floatScale2 - Return bit-level equivalent of expression 2*f for
+*   floating point argument f.
+*   Both the argument and result are passed as unsigned int's, but
+*   they are to be interpreted as the bit-level representation of
+        *   single-precision floating point values.
+*   When argument is NaN, return argument
+        *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
+*   Max ops: 30
+*   Rating: 4
+*/
 unsigned floatScale2(unsigned uf) {
-    return 2;
+    int exp = (uf & 0x7f800000) >> 23;
+    int sign = uf & (1 << 31);
+    if (exp == 0) {
+        return uf << 1 | sign;
+    }
+    if (exp == 255) {
+        return uf;
+    }
+    exp++;
+    if (exp == 255) {
+        return 0x7f800000 | sign;
+    }
+    return (exp << 23) | (uf & 0x807fffff);
 }
 
-/*12
+/* 12
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
  *   for floating point argument f.
  *   Argument is passed as unsigned int, but
@@ -308,7 +320,33 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-    return 2;
+    int s = uf >> 31;
+    int exp = (uf & 0x7f800000) >> 23;
+    int Bias = 127;
+    int E = exp - Bias;
+    int frac = uf & 0x007fffff;
+    int M = frac | 0x00800000; // M = frac + 1;
+    if (!(uf & 0x7fffffff)) {
+        return 0;
+    }
+    if (E > 31) {
+        return 0x80000000u;
+    }
+    if (E < 0) {
+        return 0;
+    }
+    if (E > 23) {
+        M = M << (E - 23);
+    } else {
+        M = M >> (23 - E);
+    }
+    if (!(M >> 31) ^ s) {
+        return M;
+    } else if (M >> 31) {
+        return 0x80000000u;
+    } else {
+        return ~M + 1;
+    }
 }
 
 /*13
@@ -325,5 +363,15 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+        int INF = 0xff << 23;//
+//        int INF =0x3f800000;
+        int exp = x + 127;
+        if (exp >= 255) {
+            return INF;
+        } else if (exp <= 0) {
+            return 0;
+        } else {
+            return exp << 23;
+        }
+
 }
