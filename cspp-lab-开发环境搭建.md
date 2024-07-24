@@ -30,3 +30,34 @@ Docker容器关闭后
 docker container start csapp_env
 ```
 
+# 安装git
+$ sudo apt-get install git
+
+# 安装cgdb
+```shell
+git clone https://github.com/cgdb/cgdb.git
+cd cgdb
+./autogen.sh
+./configure --prefix=/usr/local
+make
+sudo make install
+
+# CGDB requires curses.h or ncurses/curses.h to build
+sudo apt-get install ncurses-dev
+
+# configure: error: Please install flex before installing
+sudo apt-get install flex
+
+# configure: error: Please install makeinfo before installing
+sudo apt-get install texinfo
+
+# debconf: falling back to frontend: Readline
+# sudo apt-get install readline-dev
+sudo apt-get install libreadline-dev
+
+```
+
+# cgdb 安装问题
+## ./autogen.sh: 25: ./autogen.sh: aclocal: not found
+解决：
+$ sudo apt-get install automake libtool -y
